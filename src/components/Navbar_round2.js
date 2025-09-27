@@ -19,6 +19,15 @@ export default function Navbar_round2() {
               <p className=' font-bold text-2xl'>WEBridge</p>
             </Link>
           </div>
+
+          <div className="flex-shrink-0">
+            <Link
+              href="/round-2/login"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+            >
+              로그인
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
