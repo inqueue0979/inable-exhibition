@@ -1,0 +1,21 @@
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="43" height="43" rx="9.5" fill="white"/>
+<rect x="0.5" y="0.5" width="43" height="43" rx="9.5" stroke="#E4E7EC"/>
+<circle cx="11.5" cy="21.5" r="6.5" fill="white"/>
+<circle cx="11.5" cy="21.5" r="6.5" fill="black" fill-opacity="0.2"/>
+<circle cx="11.5" cy="21.5" r="6.5" fill="#74D5FF"/>
+<foreignObject x="6.77273" y="10.2727" width="22.4545" height="22.4545"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(2.36px);clip-path:url(#bgblur_0_2122_7141_clip_path);height:100%;width:100%"></div></foreignObject><g opacity="0.5" data-figma-bg-blur-radius="4.72727">
+<circle cx="18" cy="21.5" r="6.5" fill="white"/>
+<circle cx="18" cy="21.5" r="6.5" fill="black" fill-opacity="0.2"/>
+<circle cx="18" cy="21.5" r="6.5" fill="#3870FF"/>
+</g>
+<circle cx="33.1641" cy="21.5" r="6.5" fill="url(#paint0_linear_2122_7141)"/>
+<defs>
+<clipPath id="bgblur_0_2122_7141_clip_path" transform="translate(-6.77273 -10.2727)"><circle cx="18" cy="21.5" r="6.5"/>
+</clipPath><linearGradient id="paint0_linear_2122_7141" x1="26.2717" y1="21.5" x2="40.4375" y2="21.9763" gradientUnits="userSpaceOnUse">
+<stop stop-color="#72E1FB"/>
+<stop stop-color="#72E1FB"/>
+<stop offset="1" stop-color="#0021F4"/>
+</linearGradient>
+</defs>
+</svg>
