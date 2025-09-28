@@ -23,7 +23,7 @@ export default function Round2HomePage() {
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-blue-100" style={{height: 'calc(100vh - 64px)'}}>
-      <div className="container mx-auto px-4 py-4 h-full flex flex-col justify-between">
+      <div className="container mx-auto pt-4 h-full flex flex-col justify-between">
         {/* 메인 헤더 */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-gray-800 mb-4">WEBridge</h1>

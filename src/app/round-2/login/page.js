@@ -7,13 +7,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showError, setShowError] = useState(false);
 
+  const [showModal, setShowModal] = useState(false);
+
   const handleLogin = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     // 의도적으로 로그인 실패하도록 설정
     setShowError(true);
-    setTimeout(() => {
-      alert('로그인에 싪패했습니다. 비밀번호를 정확하게 입력해주세요.');
-    }, 100);
+    setShowModal(true);
+    // 포커스를 버튼에서 제거
+    e.target.blur();
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -26,20 +33,22 @@ export default function LoginPage() {
             <p className="text-gray-600">로그인</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                아이디
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="아이디를 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <form onSubmit={handleLogin} className="space-y-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  아이디
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="아이디를 입력하세요"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </form>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -52,23 +61,23 @@ export default function LoginPage() {
                 placeholder="비밀번호를 입력하세요"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 tabIndex={-1}
-                required
+                onFocus={(e) => e.target.blur()}
               />
             </div>
+
+            <button
+              onClick={handleLogin}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mt-4 hover:bg-blue-700 transition-colors"
+            >
+              로그인
+            </button>
 
             {showError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                 로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.
               </div>
             )}
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              로그인
-            </button>
-          </form>
+          </div>
 
           {/* 하단 링크들 */}
           <div className="text-center mt-6">
@@ -81,6 +90,33 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
+
+        {/* 모달 */}
+        {showModal && (
+          <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50 p-8">
+            <div className="bg-white rounded-lg p-12 max-w-md mx-8 relative shadow-2xl">
+              {/* X 닫기 버튼 */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+              >
+                <svg
+                  className="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-gray-800 mb-6">로그인 실패</h3>
+                <p className="text-gray-600 text-lg">로그인에 실패했습니다!<br/>비밀번호를 입력해 주세요</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
