@@ -21,7 +21,7 @@ export default function ProductDetailPage() {
       imageSrc: "/round1_1.png"
     },
     2: {
-      title: "패션 아이템 2",
+      title: "베나인 여성 가죽 포켓 반지갑",
       price: "45,000원",
       rating: "4.8",
       reviewCount: "95",
@@ -37,6 +37,9 @@ export default function ProductDetailPage() {
   };
 
   const product = productData[productId];
+
+  // alt 텍스트를 위한 변수
+  const imageAlt = product ? `${product.title} 상품 사진` : '상품 사진';
 
   // product/3이 아닌 경우 "존재하지 않는 상세페이지" 메시지 표시
   if (productId !== '3') {
@@ -83,7 +86,7 @@ export default function ProductDetailPage() {
               {product.imageSrc ? (
                 <Image
                   src={product.imageSrc}
-                  alt={product.title}
+                  alt={imageAlt}
                   width={500}
                   height={500}
                   className="w-full h-full object-cover"
@@ -156,7 +159,7 @@ export default function ProductDetailPage() {
           <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden">
             <Image
               src="/round1_3_1.png"
-              alt="양말 상세 이미지 1"
+              alt={`옵션1. 네이비/아이보리 4족 세트 / 모델이 아이보리 바탕에 네이비 줄무늬가 있는 디자인의 양말을 신고 있는 모습`}
               width={400}
               height={400}
               className="w-full h-full object-contain"
@@ -167,7 +170,7 @@ export default function ProductDetailPage() {
           <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden">
             <Image
               src="/round1_3_2.png"
-              alt="양말 상세 이미지 2"
+              alt={`옵션2. 멀티컬러 4족 세트 / 모델이 아이보리 바탕에 빨간색 줄무늬, 네이비 고무단 디자인의 양말을 신고 있는 모습`}
               width={400}
               height={400}
               className="w-full h-full  object-contain"
