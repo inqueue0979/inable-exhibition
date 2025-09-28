@@ -3,7 +3,8 @@ export async function POST(request) {
     const body = await request.json();
 
     // Flask 서버로 요청 전달
-    const response = await fetch('http://localhost:5000/evaluate', {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5000';
+    const response = await fetch(`${apiBaseUrl}/evaluate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

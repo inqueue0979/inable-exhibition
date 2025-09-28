@@ -51,7 +51,8 @@ export default function Home() {
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
-      const response = await fetch('http://127.0.0.1:5000/history?limit=50&offset=0');
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5000';
+      const response = await fetch(`${apiBaseUrl}/history?limit=50&offset=0`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
