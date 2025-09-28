@@ -51,71 +51,60 @@ export default function Home() {
 
         {/* 우측 컨텐츠 섹션 */}
         <div className="space-y-6">
-          {/* 성동구 홈페이지 검색창 */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-800">성동구 홈페이지</h3>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="검색어를 입력하세요"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                검색
-              </button>
+          {/* 성동구 홈페이지 검색창 더미 UI */}
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200">
+            <div className="p-4 justify-between">
+              <div className="flex items-center justify-center mb-1">
+              <h3 className="text-2xl font-semibold text-gray-800 mr-4">성동구 홈페이지</h3>
+            
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="검색어를 입력하세요"
+                  className="flex-1 px-4 py-3 rounded-md focus:outline-none ring-1 ring-blue-700 pointer-events-none"
+                  disabled
+                  readOnly
+                />
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md pointer-events-none"
+                  disabled
+                >
+                  검색
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* 광고 배너 */}
-          <div className="bg-blue-100 rounded-lg p-6 border-2 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  모바일 주민등록증 발급 안내
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="bg-amber-700 text-white px-3 py-1 rounded inline-block">
-                    3월 14일부터 서울시 발급 시작
+          <div className="mb-2 border-b-1 border-black mx-0 px-0" />
+            {/* 대체텍스트 부분 사진 팝업 */}
+            <div className=" p-4">
+              <div className="flex items-center justify-between">
+                <div className="ml-4">
+                  <div className="bg-gray-200 p-4 rounded-2xl">
+                    <Image
+                    src="/alttext_1.png"
+                    alt=""
+                    width={1000}
+                    height={1000}
+                    className="object-contain shadow"
+                  />
                   </div>
-                  <p className="text-gray-700">
-                    ※ 성동구 주민등록 성동구에서만 발급한 신분 서류로 발급 가능
-                  </p>
-                  <div className="bg-amber-700 text-white px-3 py-1 rounded inline-block">
-                    3월 28일부터 전국 마이나라 발급 가능
-                  </div>
-                  <p className="text-gray-700">
-                    발급방법: 17세 이상 주민등록증을 발급받은 사람 중 희망자
-                  </p>
                 </div>
               </div>
-              <div className="ml-4">
-                <Image
-                  src="/메인 페이지.jpg"
-                  alt="모바일 주민등록증 발급 안내 일러스트"
-                  width={120}
-                  height={120}
-                  className="object-contain"
-                />
+              <div className="mt-4 text-right">
+                <span className="text-sm text-gray-600">이전 | 다음</span>
               </div>
-            </div>
-            <div className="mt-4 text-right">
-              <span className="text-sm text-gray-600">이번 1 다음</span>
             </div>
           </div>
 
-          {/* 피드백 입력 영역 */}
-          <div className="space-y-4">
+          {/* 대체텍스트 입력 영역 */}
+          <div className=" justify-between gap-4 flex">
             <textarea
-              placeholder="의견과 대체텍스트를 입력해 주세요."
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+              placeholder="적절한 대체텍스트를 입력해 주세요."
+              className="w-full px-4 py-3 rounded-md outline-none border-2 border-blue-500 h-12 resize-none"
             />
-            <div className="flex justify-end">
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                입력하기
-              </button>
-            </div>
+            <button className="bg-blue-600 text-sm font-semibold text-white w-24 px-1 py-2 rounded-md hover:bg-blue-700">
+              입력하기
+            </button>
           </div>
         </div>
       </div>
