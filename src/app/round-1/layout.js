@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "이너블 캠퍼스타운 팝업",
+  title: "이너블 - 탭 이동 및 스크린리더 체험",
   description: "정보의 바다에서 누구나 자유로이 헤엄칠 수 있도록",
 };
 

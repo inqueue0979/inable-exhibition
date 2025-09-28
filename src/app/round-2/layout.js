@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "WEBridge - 웹 접근성 미준수 체험",
-  description: "웹 접근성이 준수되지 않은 사이트 체험",
+  title: "이너블 - 웹 접근성 미준수 체험",
+  description: "정보의 바다에서 누구나 자유로이 헤엄칠 수 있도록",
 };
 
 export default function RootLayout({ children }) {
