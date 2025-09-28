@@ -1,7 +1,29 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Home() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = [
+    { src: "/alttext_1.png", alt: "대체텍스트 예시 이미지 1" },
+    { src: "/alttext_1.png", alt: "대체텍스트 예시 이미지 2" },
+    { src: "/alttext_1.png", alt: "대체텍스트 예시 이미지 3" }
+  ];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
+  };
   return (
    <section className="min-h-screen bg-gradient-to-b from-[#ECF3FF] to-white">
     <Navbar />
@@ -51,12 +73,28 @@ export default function Home() {
 
         {/* 우측 컨텐츠 섹션 */}
         <div className="space-y-6">
+          {/* 프로그레스 바 */}
+          <div className="flex justify-end mb-4">
+            <div className="flex gap-1 w-1/3">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToImage(index)}
+                  className={`flex-1 h-1 rounded-full transition-colors ${
+                    index === currentImageIndex ? 'bg-black' : 'bg-gray-300'
+                  }`}
+                  aria-label={`이미지 ${index + 1}번으로 이동`}
+                />
+              ))}
+            </div>
+          </div>
+
           {/* 성동구 홈페이지 검색창 더미 UI */}
           <div className="bg-white rounded-lg shadow-xl border border-gray-200">
             <div className="p-4 justify-between">
               <div className="flex items-center justify-center mb-1">
               <h3 className="text-2xl font-semibold text-gray-800 mr-4">성동구 홈페이지</h3>
-            
+
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -81,17 +119,31 @@ export default function Home() {
                 <div className="ml-4">
                   <div className="bg-gray-200 p-4 rounded-2xl">
                     <Image
-                    src="/alttext_1.png"
-                    alt=""
-                    width={1000}
-                    height={1000}
-                    className="object-contain shadow"
-                  />
+                      src={images[currentImageIndex].src}
+                      alt={images[currentImageIndex].alt}
+                      width={1000}
+                      height={1000}
+                      className="object-contain shadow"
+                    />
                   </div>
                 </div>
               </div>
               <div className="mt-4 text-right">
-                <span className="text-sm text-gray-600">이전 | 다음</span>
+                <button
+                  onClick={prevImage}
+                  className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                  aria-label="이전 이미지"
+                >
+                  이전
+                </button>
+                <span className="text-sm text-gray-600 mx-2">|</span>
+                <button
+                  onClick={nextImage}
+                  className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                  aria-label="다음 이미지"
+                >
+                  다음
+                </button>
               </div>
             </div>
           </div>
