@@ -78,11 +78,12 @@ export default function ProductDetailPage() {
   return (
     <div className="p-4" style={{backgroundColor: '#ECF3FF'}}>
       {/* 상단 섹션 - 메인 상품 정보 */}
-      <div className="rounded-2xl bg-white p-6 mb-4" style={{height: '45%'}}>
+      <section className="rounded-2xl bg-white p-6 mb-4" style={{height: '45%'}} role="region" aria-labelledby="product-info">
         <div className="flex gap-8 h-full">
           {/* 왼쪽 - 상품 이미지 */}
           <div className="flex-1">
-            <div className="aspect-square rounded-lg overflow-hidden">
+            <div className="aspect-square rounded-lg overflow-hidden" role="img" aria-labelledby="main-product-image">
+              <h2 id="main-product-image" className="sr-only">메인 상품 이미지</h2>
               {product.imageSrc ? (
                 <Image
                   src={product.imageSrc}
@@ -90,26 +91,36 @@ export default function ProductDetailPage() {
                   width={500}
                   height={500}
                   className="w-full h-full object-cover"
+                  tabIndex={0}
+                  role="img"
                 />
               ) : (
-                <div className="bg-gray-200 w-full h-full"></div>
+                <div className="bg-gray-200 w-full h-full" role="img" aria-label="상품 이미지 없음" tabIndex={0}></div>
               )}
             </div>
           </div>
 
           {/* 오른쪽 - 상품 정보 */}
           <div className="flex-1 space-y-6">
-            <h1 className="text-2xl font-bold">{product.title}</h1>
-            <p className="text-3xl font-bold text-blue-600">{product.price}</p>
+            <header>
+              <h1 id="product-info" className="text-2xl font-bold" tabIndex={0}>{product.title}</h1>
+              <div className="text-3xl font-bold text-blue-600" role="text" tabIndex={0}>
+                <span className="sr-only">상품 가격: </span>
+                <span aria-label={`가격 ${product.price}`}>{product.price}</span>
+              </div>
+            </header>
 
             {/* 옵션 선택 */}
-            <div className="space-y-4">
+            <fieldset className="space-y-4">
+              <legend className="sr-only">상품 옵션 선택</legend>
               <div>
-                <label className="block text-sm font-medium mb-2">디자인</label>
+                <label htmlFor="design-select" className="block text-sm font-medium mb-2">디자인</label>
                 <select
+                  id="design-select"
                   className="w-full p-2 border border-gray-300 rounded-md"
                   value={selectedDesign}
                   onChange={(e) => setSelectedDesign(e.target.value)}
+                  aria-required="true"
                 >
                   <option style={{display: 'none'}}
                   value="">디자인 선택</option>
@@ -119,11 +130,13 @@ export default function ProductDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">색상</label>
+                <label htmlFor="color-select" className="block text-sm font-medium mb-2">색상</label>
                 <select
+                  id="color-select"
                   className="w-full p-2 border border-gray-300 rounded-md"
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
+                  aria-required="true"
                 >
                   <option value="" style={{display: 'none'}}>색상 선택</option>
                   <option value="네이비 / 아이보리">네이비 / 아이보리</option>
@@ -132,7 +145,7 @@ export default function ProductDetailPage() {
                   <option value="멀티 컬러 (핑크)">멀티 컬러 (핑크)</option>
                 </select>
               </div>
-            </div>
+            </fieldset>
 
             {/* 구매하기 버튼 */}
             <button
@@ -143,41 +156,51 @@ export default function ProductDetailPage() {
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
+              aria-describedby="purchase-requirements"
             >
               구매하기
             </button>
+            <div id="purchase-requirements" className="sr-only">
+              {!selectedDesign || !selectedColor
+                ? '구매하려면 디자인과 색상을 모두 선택해주세요.'
+                : '구매 가능한 상태입니다.'}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* 하단 섹션 - 상세 이미지 */}
-      <div className="rounded-2xl bg-white p-6" style={{height: '50%'}}>
-        <h2 className="text-xl font-bold mb-6">상세 이미지</h2>
+      <section className="rounded-2xl bg-white p-6" style={{height: '50%'}} role="region" aria-labelledby="product-details">
+        <h2 id="product-details" className="text-xl font-bold mb-6">상세 이미지</h2>
 
-        <div className="space-y-4 overflow-auto" style={{height: 'calc(100% - 3rem)'}}>
+        <div className="space-y-4 overflow-auto" style={{height: 'calc(100% - 3rem)'}} role="list" aria-label="상품 옵션별 상세 이미지">
           {/* OPTION 01 이미지 */}
-          <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden">
+          <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden" role="listitem">
+            <h3 className="sr-only">옵션 1: 네이비/아이보리 4족 세트</h3>
             <Image
               src="/round1_3_1.png"
-              alt={`옵션1. 네이비/아이보리 4족 세트 / 모델이 아이보리 바탕에 네이비 줄무늬가 있는 디자인의 양말을 신고 있는 모습`}
+              alt="옵션1. 네이비/아이보리 4족 세트 - 모델이 아이보리 바탕에 네이비 줄무늬가 있는 디자인의 양말을 신고 있는 모습"
               width={400}
               height={400}
               className="w-full h-full object-contain"
+              tabIndex={0}
             />
           </div>
 
           {/* OPTION 02 이미지 */}
-          <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden">
+          <div className="w-1/2 aspect-square rounded-lg mx-auto overflow-hidden" role="listitem">
+            <h3 className="sr-only">옵션 2: 멀티컬러 4족 세트</h3>
             <Image
               src="/round1_3_2.png"
-              alt={`옵션2. 멀티컬러 4족 세트 / 모델이 아이보리 바탕에 빨간색 줄무늬, 네이비 고무단 디자인의 양말을 신고 있는 모습`}
+              alt="옵션2. 멀티컬러 4족 세트 - 모델이 아이보리 바탕에 빨간색 줄무늬, 네이비 고무단 디자인의 양말을 신고 있는 모습"
               width={400}
               height={400}
-              className="w-full h-full  object-contain"
+              className="w-full h-full object-contain"
+              tabIndex={0}
             />
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

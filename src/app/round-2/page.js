@@ -2,11 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Round2HomePage() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const closeButtonRef = useRef(null);
+  const modalTitleRef = useRef(null);
+  const modalContentRef = useRef(null);
 
   const handleLoginClick = () => {
     router.push('/round-2/login');
@@ -20,6 +23,44 @@ export default function Round2HomePage() {
     setShowModal(false);
     router.push('/round-2/login');
   };
+
+  useEffect(() => {
+    if (showModal && modalTitleRef.current) {
+      modalTitleRef.current.focus();
+    }
+  }, [showModal]);
+
+  useEffect(() => {
+    if (!showModal) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        const focusableElements = modalContentRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (!focusableElements || focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showModal]);
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-blue-100" style={{height: 'calc(100vh - 64px)'}}>
@@ -99,11 +140,19 @@ export default function Round2HomePage() {
         {/* 모달 */}
         {showModal && (
           <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50 p-8">
-            <div className="bg-white rounded-lg p-12 max-w-md mx-8 relative shadow-2xl">
+            <div
+              ref={modalContentRef}
+              className="bg-white rounded-lg p-12 max-w-md mx-8 relative shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
+            >
               {/* X 닫기 버튼 */}
               <button
+                ref={closeButtonRef}
                 onClick={closeModal}
                 className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+                aria-label="모달 닫기"
               >
                 <svg
                   className="w-4 h-4 text-gray-600"
@@ -116,8 +165,17 @@ export default function Round2HomePage() {
               </button>
 
               <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-800 mb-6">알림</h3>
-                <p className="text-gray-600 text-lg">로그인 후 이용 가능합니다</p>
+                <h3
+                  ref={modalTitleRef}
+                  className="text-xl font-bold text-gray-800 mb-6"
+                  tabIndex={0}
+                  role="dialog"
+                  aria-labelledby="modal-title"
+                  id="modal-title"
+                >
+                  알림
+                </h3>
+                <p className="text-gray-600 text-lg" tabIndex={0}>로그인 후 이용 가능합니다</p>
               </div>
             </div>
           </div>

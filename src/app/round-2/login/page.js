@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showError, setShowError] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
+  const closeButtonRef = useRef(null);
+  const modalTitleRef = useRef(null);
+  const modalContentRef = useRef(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -22,6 +24,44 @@ export default function LoginPage() {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  useEffect(() => {
+    if (showModal && modalTitleRef.current) {
+      modalTitleRef.current.focus();
+    }
+  }, [showModal]);
+
+  useEffect(() => {
+    if (!showModal) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        const focusableElements = modalContentRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (!focusableElements || focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showModal]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -94,11 +134,19 @@ export default function LoginPage() {
         {/* 모달 */}
         {showModal && (
           <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50 p-8">
-            <div className="bg-white rounded-lg p-12 max-w-md mx-8 relative shadow-2xl">
+            <div
+              ref={modalContentRef}
+              className="bg-white rounded-lg p-12 max-w-md mx-8 relative shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="login-modal-title"
+            >
               {/* X 닫기 버튼 */}
               <button
+                ref={closeButtonRef}
                 onClick={closeModal}
                 className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+                aria-label="모달 닫기"
               >
                 <svg
                   className="w-4 h-4 text-gray-600"
@@ -111,8 +159,17 @@ export default function LoginPage() {
               </button>
 
               <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-800 mb-6">로그인 실패</h3>
-                <p className="text-gray-600 text-lg">로그인에 실패했습니다!<br/>비밀번호를 입력해 주세요</p>
+                <h3
+                  ref={modalTitleRef}
+                  className="text-xl font-bold text-gray-800 mb-6"
+                  tabIndex={0}
+                  role="dialog"
+                  aria-labelledby="login-modal-title"
+                  id="login-modal-title"
+                >
+                  로그인 실패
+                </h3>
+                <p className="text-gray-600 text-lg" tabIndex={0}>로그인에 실패했습니다!<br/>비밀번호를 입력해 주세요</p>
               </div>
             </div>
           </div>
