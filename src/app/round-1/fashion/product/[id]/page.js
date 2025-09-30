@@ -81,17 +81,32 @@ export default function ProductDetailPage() {
   // 키보드 이벤트 핸들러
   const handleDesignKeyDown = (e) => {
     // 디버깅용 로그 (개발 중에만 사용)
-    console.log('Design KeyDown:', e.key, e.code, e.which, e.keyCode);
+    console.log('Design KeyDown:', {
+      key: e.key,
+      code: e.code,
+      keyCode: e.keyCode,
+      isDesignOpen,
+      focusedDesignIndex
+    });
 
     // 스페이스바나 엔터키로 열기/선택
     if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
       e.preventDefault();
       e.stopPropagation();
+
+      console.log('Space/Enter pressed:', { isDesignOpen, focusedDesignIndex });
+
       if (!isDesignOpen) {
+        console.log('Opening design select');
         setIsDesignOpen(true);
         setFocusedDesignIndex(0);
-      } else if (focusedDesignIndex >= 0) {
+      } else if (focusedDesignIndex >= 0 && focusedDesignIndex < designOptions.length) {
+        console.log('Selecting option:', designOptions[focusedDesignIndex]);
         setSelectedDesign(designOptions[focusedDesignIndex]);
+        setIsDesignOpen(false);
+        setFocusedDesignIndex(-1);
+      } else {
+        console.log('No valid option focused, closing');
         setIsDesignOpen(false);
         setFocusedDesignIndex(-1);
       }
@@ -101,10 +116,14 @@ export default function ProductDetailPage() {
       e.preventDefault();
       if (e.shiftKey) {
         // Shift+Tab: 역방향
-        setFocusedDesignIndex((prev) => (prev - 1 + designOptions.length) % designOptions.length);
+        const newIndex = (focusedDesignIndex - 1 + designOptions.length) % designOptions.length;
+        console.log('Shift+Tab - new index:', newIndex);
+        setFocusedDesignIndex(newIndex);
       } else {
         // Tab: 순방향
-        setFocusedDesignIndex((prev) => (prev + 1) % designOptions.length);
+        const newIndex = (focusedDesignIndex + 1) % designOptions.length;
+        console.log('Tab - new index:', newIndex);
+        setFocusedDesignIndex(newIndex);
       }
     }
     // 방향키로도 순환 (윈도우 접근성 표준)
@@ -125,17 +144,32 @@ export default function ProductDetailPage() {
 
   const handleColorKeyDown = (e) => {
     // 디버깅용 로그 (개발 중에만 사용)
-    console.log('Color KeyDown:', e.key, e.code, e.which, e.keyCode);
+    console.log('Color KeyDown:', {
+      key: e.key,
+      code: e.code,
+      keyCode: e.keyCode,
+      isColorOpen,
+      focusedColorIndex
+    });
 
     // 스페이스바나 엔터키로 열기/선택
     if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
       e.preventDefault();
       e.stopPropagation();
+
+      console.log('Space/Enter pressed:', { isColorOpen, focusedColorIndex });
+
       if (!isColorOpen) {
+        console.log('Opening color select');
         setIsColorOpen(true);
         setFocusedColorIndex(0);
-      } else if (focusedColorIndex >= 0) {
+      } else if (focusedColorIndex >= 0 && focusedColorIndex < colorOptions.length) {
+        console.log('Selecting option:', colorOptions[focusedColorIndex]);
         setSelectedColor(colorOptions[focusedColorIndex]);
+        setIsColorOpen(false);
+        setFocusedColorIndex(-1);
+      } else {
+        console.log('No valid option focused, closing');
         setIsColorOpen(false);
         setFocusedColorIndex(-1);
       }
@@ -145,10 +179,14 @@ export default function ProductDetailPage() {
       e.preventDefault();
       if (e.shiftKey) {
         // Shift+Tab: 역방향
-        setFocusedColorIndex((prev) => (prev - 1 + colorOptions.length) % colorOptions.length);
+        const newIndex = (focusedColorIndex - 1 + colorOptions.length) % colorOptions.length;
+        console.log('Color Shift+Tab - new index:', newIndex);
+        setFocusedColorIndex(newIndex);
       } else {
         // Tab: 순방향
-        setFocusedColorIndex((prev) => (prev + 1) % colorOptions.length);
+        const newIndex = (focusedColorIndex + 1) % colorOptions.length;
+        console.log('Color Tab - new index:', newIndex);
+        setFocusedColorIndex(newIndex);
       }
     }
     // 방향키로도 순환 (윈도우 접근성 표준)
@@ -193,6 +231,39 @@ export default function ProductDetailPage() {
   const handlePurchase = () => {
     if (selectedDesign && selectedColor) {
       setIsPurchased(true);
+    }
+  };
+
+  // 추가 이벤트 핸들러 - keypress도 처리
+  const handleDesignKeyPress = (e) => {
+    console.log('Design KeyPress:', {
+      key: e.key,
+      charCode: e.charCode,
+      keyCode: e.keyCode,
+      which: e.which
+    });
+
+    // 스페이스바 처리 (charCode 32)
+    if (e.charCode === 32 || e.which === 32 || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('KeyPress space detected');
+    }
+  };
+
+  const handleColorKeyPress = (e) => {
+    console.log('Color KeyPress:', {
+      key: e.key,
+      charCode: e.charCode,
+      keyCode: e.keyCode,
+      which: e.which
+    });
+
+    // 스페이스바 처리 (charCode 32)
+    if (e.charCode === 32 || e.which === 32 || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('KeyPress space detected');
     }
   };
 
@@ -268,9 +339,10 @@ export default function ProductDetailPage() {
                   aria-required="true"
                   aria-label={`디자인 선택. ${selectedDesign ? `현재 선택: ${selectedDesign}` : '선택되지 않음'}`}
                   onKeyDown={handleDesignKeyDown}
+                  onKeyPress={handleDesignKeyPress}
                   onKeyUp={(e) => {
-                    // 일부 윈도우 환경에서 keyup으로 처리되는 경우 대비
-                    if ((e.key === ' ' || e.key === 'Enter') && !isDesignOpen) {
+                    // keyup에서는 preventDefault만 하고 실제 처리는 keydown에서
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
                       e.preventDefault();
                       e.stopPropagation();
                     }
@@ -325,9 +397,10 @@ export default function ProductDetailPage() {
                   aria-required="true"
                   aria-label={`색상 선택. ${selectedColor ? `현재 선택: ${selectedColor}` : '선택되지 않음'}`}
                   onKeyDown={handleColorKeyDown}
+                  onKeyPress={handleColorKeyPress}
                   onKeyUp={(e) => {
-                    // 일부 윈도우 환경에서 keyup으로 처리되는 경우 대비
-                    if ((e.key === ' ' || e.key === 'Enter') && !isColorOpen) {
+                    // keyup에서는 preventDefault만 하고 실제 처리는 keydown에서
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
                       e.preventDefault();
                       e.stopPropagation();
                     }
