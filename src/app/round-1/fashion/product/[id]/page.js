@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 export default function ProductDetailPage() {
@@ -10,6 +10,13 @@ export default function ProductDetailPage() {
   const [selectedDesign, setSelectedDesign] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [isPurchased, setIsPurchased] = useState(false);
+  const [isDesignOpen, setIsDesignOpen] = useState(false);
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const [focusedDesignIndex, setFocusedDesignIndex] = useState(-1);
+  const [focusedColorIndex, setFocusedColorIndex] = useState(-1);
+  const messageRef = useRef(null);
+  const designSelectRef = useRef(null);
+  const colorSelectRef = useRef(null);
 
   // 임시 상품 데이터 (실제로는 API나 데이터베이스에서 가져올 것)
   const productData = {
@@ -38,15 +45,94 @@ export default function ProductDetailPage() {
 
   const product = productData[productId];
 
+  // 옵션 데이터
+  const designOptions = ['땡땡이', '줄무늬'];
+  const colorOptions = ['네이비 / 아이보리', '멀티 컬러 (옐로우)', '멀티 컬러 (그린)', '멀티 컬러 (핑크)'];
+
   // alt 텍스트를 위한 변수
   const imageAlt = product ? `${product.title} 상품 사진` : '상품 사진';
+
+  // 메시지가 표시될 때 포커스 설정
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.focus();
+    }
+  }, [productId, isPurchased]);
+
+  // 외부 클릭 시 셀렉트 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (designSelectRef.current && !designSelectRef.current.contains(event.target)) {
+        setIsDesignOpen(false);
+        setFocusedDesignIndex(-1);
+      }
+      if (colorSelectRef.current && !colorSelectRef.current.contains(event.target)) {
+        setIsColorOpen(false);
+        setFocusedColorIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 키보드 이벤트 핸들러
+  const handleDesignKeyDown = (e) => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      if (!isDesignOpen) {
+        setIsDesignOpen(true);
+        setFocusedDesignIndex(0);
+      } else if (focusedDesignIndex >= 0) {
+        setSelectedDesign(designOptions[focusedDesignIndex]);
+        setIsDesignOpen(false);
+        setFocusedDesignIndex(-1);
+      }
+    } else if (e.key === 'Tab' && isDesignOpen) {
+      e.preventDefault();
+      setFocusedDesignIndex((prev) => (prev + 1) % designOptions.length);
+    } else if (e.key === 'Escape') {
+      setIsDesignOpen(false);
+      setFocusedDesignIndex(-1);
+    }
+  };
+
+  const handleColorKeyDown = (e) => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      if (!isColorOpen) {
+        setIsColorOpen(true);
+        setFocusedColorIndex(0);
+      } else if (focusedColorIndex >= 0) {
+        setSelectedColor(colorOptions[focusedColorIndex]);
+        setIsColorOpen(false);
+        setFocusedColorIndex(-1);
+      }
+    } else if (e.key === 'Tab' && isColorOpen) {
+      e.preventDefault();
+      setFocusedColorIndex((prev) => (prev + 1) % colorOptions.length);
+    } else if (e.key === 'Escape') {
+      setIsColorOpen(false);
+      setFocusedColorIndex(-1);
+    }
+  };
 
   // product/3이 아닌 경우 "존재하지 않는 상세페이지" 메시지 표시
   if (productId !== '3') {
     return (
       <div className="p-4 h-screen" style={{backgroundColor: '#ECF3FF'}}>
         <div className=" rounded-2xl flex items-center justify-center  bg-white h-full">
-          <h1 className="text-3xl font-bold mb-6">양말 제품이 존재하지 않는 상세페이지에요</h1>
+          <h1
+            ref={messageRef}
+            className="text-3xl font-bold mb-6"
+            tabIndex={0}
+            aria-live="polite"
+            role="alert"
+          >
+            양말 제품이 존재하지 않는 상세페이지에요
+          </h1>
         </div>
       </div>
     );
@@ -66,9 +152,14 @@ export default function ProductDetailPage() {
     return (
       <div className="p-4 h-screen" style={{backgroundColor: '#ECF3FF'}}>
         <div className="rounded-2xl flex items-center justify-center bg-white h-full">
-          <h1 className="text-3xl font-bold mb-6 text-center">
-            {product.title} ({product.price}) / {selectedDesign} / {selectedColor}<br/>
-            제품을 구매했어요!
+          <h1
+            ref={messageRef}
+            className="text-3xl font-bold mb-6 text-center"
+            tabIndex={0}
+            aria-live="polite"
+            role="alert"
+          >
+            {product.title} ({product.price}) / {selectedDesign} / {selectedColor} 제품을 구매했어요! 
           </h1>
         </div>
       </div>
@@ -113,37 +204,99 @@ export default function ProductDetailPage() {
             {/* 옵션 선택 */}
             <fieldset className="space-y-4">
               <legend className="sr-only">상품 옵션 선택</legend>
-              <div>
-                <label htmlFor="design-select" className="block text-sm font-medium mb-2">디자인</label>
-                <select
-                  id="design-select"
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedDesign}
-                  onChange={(e) => setSelectedDesign(e.target.value)}
+
+              {/* 디자인 선택 */}
+              <div className="relative">
+                <label className="block text-sm font-medium mb-2">디자인</label>
+                <div
+                  ref={designSelectRef}
+                  className="w-full p-2 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  tabIndex={0}
+                  role="combobox"
+                  aria-expanded={isDesignOpen}
+                  aria-haspopup="listbox"
+                  aria-controls="design-listbox"
                   aria-required="true"
+                  aria-label="디자인 선택"
+                  onKeyDown={handleDesignKeyDown}
+                  onClick={() => setIsDesignOpen(!isDesignOpen)}
                 >
-                  <option style={{display: 'none'}}
-                  value="">디자인 선택</option>
-                  <option value="땡땡이">땡땡이</option>
-                  <option value="줄무늬">줄무늬</option>
-                </select>
+                  {selectedDesign || '디자인 선택'}
+                  <span className="float-right">▼</span>
+                </div>
+                {isDesignOpen && (
+                  <ul
+                    id="design-listbox"
+                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
+                    role="listbox"
+                    aria-label="디자인 옵션"
+                  >
+                    {designOptions.map((option, index) => (
+                      <li
+                        key={option}
+                        className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                          index === focusedDesignIndex ? 'bg-blue-200' : ''
+                        } ${selectedDesign === option ? 'bg-blue-50 font-medium' : ''}`}
+                        role="option"
+                        aria-selected={selectedDesign === option}
+                        onClick={() => {
+                          setSelectedDesign(option);
+                          setIsDesignOpen(false);
+                          setFocusedDesignIndex(-1);
+                        }}
+                      >
+                        {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              <div>
-                <label htmlFor="color-select" className="block text-sm font-medium mb-2">색상</label>
-                <select
-                  id="color-select"
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedColor}
-                  onChange={(e) => setSelectedColor(e.target.value)}
+              {/* 색상 선택 */}
+              <div className="relative">
+                <label className="block text-sm font-medium mb-2">색상</label>
+                <div
+                  ref={colorSelectRef}
+                  className="w-full p-2 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  tabIndex={0}
+                  role="combobox"
+                  aria-expanded={isColorOpen}
+                  aria-haspopup="listbox"
+                  aria-controls="color-listbox"
                   aria-required="true"
+                  aria-label="색상 선택"
+                  onKeyDown={handleColorKeyDown}
+                  onClick={() => setIsColorOpen(!isColorOpen)}
                 >
-                  <option value="" style={{display: 'none'}}>색상 선택</option>
-                  <option value="네이비 / 아이보리">네이비 / 아이보리</option>
-                  <option value="멀티 컬러 (옐로우)">멀티 컬러 (옐로우)</option>
-                  <option value="멀티 컬러 (그린)">멀티 컬러 (그린)</option>
-                  <option value="멀티 컬러 (핑크)">멀티 컬러 (핑크)</option>
-                </select>
+                  {selectedColor || '색상 선택'}
+                  <span className="float-right">▼</span>
+                </div>
+                {isColorOpen && (
+                  <ul
+                    id="color-listbox"
+                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
+                    role="listbox"
+                    aria-label="색상 옵션"
+                  >
+                    {colorOptions.map((option, index) => (
+                      <li
+                        key={option}
+                        className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                          index === focusedColorIndex ? 'bg-blue-200' : ''
+                        } ${selectedColor === option ? 'bg-blue-50 font-medium' : ''}`}
+                        role="option"
+                        aria-selected={selectedColor === option}
+                        onClick={() => {
+                          setSelectedColor(option);
+                          setIsColorOpen(false);
+                          setFocusedColorIndex(-1);
+                        }}
+                      >
+                        {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </fieldset>
 
