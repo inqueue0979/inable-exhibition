@@ -14,6 +14,7 @@ export default function ProductDetailPage() {
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [focusedDesignIndex, setFocusedDesignIndex] = useState(-1);
   const [focusedColorIndex, setFocusedColorIndex] = useState(-1);
+  const [isClient, setIsClient] = useState(false);
   const messageRef = useRef(null);
   const designSelectRef = useRef(null);
   const colorSelectRef = useRef(null);
@@ -52,12 +53,17 @@ export default function ProductDetailPage() {
   // alt 텍스트를 위한 변수
   const imageAlt = product ? `${product.title} 상품 사진` : '상품 사진';
 
+  // 클라이언트 사이드 hydration 체크
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // 메시지가 표시될 때 포커스 설정
   useEffect(() => {
-    if (messageRef.current) {
+    if (isClient && messageRef.current) {
       messageRef.current.focus();
     }
-  }, [productId, isPurchased]);
+  }, [productId, isPurchased, isClient]);
 
   // 외부 클릭 시 셀렉트 닫기
   useEffect(() => {
@@ -80,54 +86,34 @@ export default function ProductDetailPage() {
 
   // 키보드 이벤트 핸들러
   const handleDesignKeyDown = (e) => {
-    // 디버깅용 로그 (개발 중에만 사용)
-    console.log('Design KeyDown:', {
-      key: e.key,
-      code: e.code,
-      keyCode: e.keyCode,
-      isDesignOpen,
-      focusedDesignIndex
-    });
+    console.log('Design key:', e.key, 'Open:', isDesignOpen, 'Index:', focusedDesignIndex);
 
-    // 스페이스바나 엔터키로 열기/선택
-    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
+    // 스페이스바나 엔터키
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      e.stopPropagation();
-
-      console.log('Space/Enter pressed:', { isDesignOpen, focusedDesignIndex });
 
       if (!isDesignOpen) {
-        console.log('Opening design select');
+        // 셀렉트 열기
         setIsDesignOpen(true);
         setFocusedDesignIndex(0);
-      } else if (focusedDesignIndex >= 0 && focusedDesignIndex < designOptions.length) {
-        console.log('Selecting option:', designOptions[focusedDesignIndex]);
+      } else if (focusedDesignIndex >= 0) {
+        // 옵션 선택
         setSelectedDesign(designOptions[focusedDesignIndex]);
         setIsDesignOpen(false);
         setFocusedDesignIndex(-1);
-      } else {
-        console.log('No valid option focused, closing');
-        setIsDesignOpen(false);
-        setFocusedDesignIndex(-1);
       }
     }
-    // 탭으로 옵션 순환 (열린 상태에서만)
+    // 탭으로 옵션 순환
     else if (e.key === 'Tab' && isDesignOpen) {
       e.preventDefault();
       if (e.shiftKey) {
-        // Shift+Tab: 역방향
-        const newIndex = (focusedDesignIndex - 1 + designOptions.length) % designOptions.length;
-        console.log('Shift+Tab - new index:', newIndex);
-        setFocusedDesignIndex(newIndex);
+        setFocusedDesignIndex((prev) => (prev - 1 + designOptions.length) % designOptions.length);
       } else {
-        // Tab: 순방향
-        const newIndex = (focusedDesignIndex + 1) % designOptions.length;
-        console.log('Tab - new index:', newIndex);
-        setFocusedDesignIndex(newIndex);
+        setFocusedDesignIndex((prev) => (prev + 1) % designOptions.length);
       }
     }
-    // 방향키로도 순환 (윈도우 접근성 표준)
-    else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && isDesignOpen) {
+    // 방향키로 순환
+    else if (isDesignOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
       e.preventDefault();
       if (e.key === 'ArrowDown') {
         setFocusedDesignIndex((prev) => (prev + 1) % designOptions.length);
@@ -143,54 +129,34 @@ export default function ProductDetailPage() {
   };
 
   const handleColorKeyDown = (e) => {
-    // 디버깅용 로그 (개발 중에만 사용)
-    console.log('Color KeyDown:', {
-      key: e.key,
-      code: e.code,
-      keyCode: e.keyCode,
-      isColorOpen,
-      focusedColorIndex
-    });
+    console.log('Color key:', e.key, 'Open:', isColorOpen, 'Index:', focusedColorIndex);
 
-    // 스페이스바나 엔터키로 열기/선택
-    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
+    // 스페이스바나 엔터키
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      e.stopPropagation();
-
-      console.log('Space/Enter pressed:', { isColorOpen, focusedColorIndex });
 
       if (!isColorOpen) {
-        console.log('Opening color select');
+        // 셀렉트 열기
         setIsColorOpen(true);
         setFocusedColorIndex(0);
-      } else if (focusedColorIndex >= 0 && focusedColorIndex < colorOptions.length) {
-        console.log('Selecting option:', colorOptions[focusedColorIndex]);
+      } else if (focusedColorIndex >= 0) {
+        // 옵션 선택
         setSelectedColor(colorOptions[focusedColorIndex]);
         setIsColorOpen(false);
         setFocusedColorIndex(-1);
-      } else {
-        console.log('No valid option focused, closing');
-        setIsColorOpen(false);
-        setFocusedColorIndex(-1);
       }
     }
-    // 탭으로 옵션 순환 (열린 상태에서만)
+    // 탭으로 옵션 순환
     else if (e.key === 'Tab' && isColorOpen) {
       e.preventDefault();
       if (e.shiftKey) {
-        // Shift+Tab: 역방향
-        const newIndex = (focusedColorIndex - 1 + colorOptions.length) % colorOptions.length;
-        console.log('Color Shift+Tab - new index:', newIndex);
-        setFocusedColorIndex(newIndex);
+        setFocusedColorIndex((prev) => (prev - 1 + colorOptions.length) % colorOptions.length);
       } else {
-        // Tab: 순방향
-        const newIndex = (focusedColorIndex + 1) % colorOptions.length;
-        console.log('Color Tab - new index:', newIndex);
-        setFocusedColorIndex(newIndex);
+        setFocusedColorIndex((prev) => (prev + 1) % colorOptions.length);
       }
     }
-    // 방향키로도 순환 (윈도우 접근성 표준)
-    else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && isColorOpen) {
+    // 방향키로 순환
+    else if (isColorOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
       e.preventDefault();
       if (e.key === 'ArrowDown') {
         setFocusedColorIndex((prev) => (prev + 1) % colorOptions.length);
@@ -234,38 +200,6 @@ export default function ProductDetailPage() {
     }
   };
 
-  // 추가 이벤트 핸들러 - keypress도 처리
-  const handleDesignKeyPress = (e) => {
-    console.log('Design KeyPress:', {
-      key: e.key,
-      charCode: e.charCode,
-      keyCode: e.keyCode,
-      which: e.which
-    });
-
-    // 스페이스바 처리 (charCode 32)
-    if (e.charCode === 32 || e.which === 32 || e.key === ' ') {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log('KeyPress space detected');
-    }
-  };
-
-  const handleColorKeyPress = (e) => {
-    console.log('Color KeyPress:', {
-      key: e.key,
-      charCode: e.charCode,
-      keyCode: e.keyCode,
-      which: e.which
-    });
-
-    // 스페이스바 처리 (charCode 32)
-    if (e.charCode === 32 || e.which === 32 || e.key === ' ') {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log('KeyPress space detected');
-    }
-  };
 
   if (isPurchased) {
     return (
@@ -332,27 +266,21 @@ export default function ProductDetailPage() {
                   className="w-full p-2 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                   tabIndex={0}
                   role="combobox"
-                  aria-expanded={isDesignOpen}
+                  aria-expanded={isClient ? isDesignOpen : false}
                   aria-haspopup="listbox"
                   aria-controls="design-listbox"
-                  aria-activedescendant={isDesignOpen && focusedDesignIndex >= 0 ? `design-option-${focusedDesignIndex}` : undefined}
+                  {...(isClient && isDesignOpen && focusedDesignIndex >= 0 && {
+                    'aria-activedescendant': `design-option-${focusedDesignIndex}`
+                  })}
                   aria-required="true"
                   aria-label={`디자인 선택. ${selectedDesign ? `현재 선택: ${selectedDesign}` : '선택되지 않음'}`}
                   onKeyDown={handleDesignKeyDown}
-                  onKeyPress={handleDesignKeyPress}
-                  onKeyUp={(e) => {
-                    // keyup에서는 preventDefault만 하고 실제 처리는 keydown에서
-                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }
-                  }}
                   onClick={() => setIsDesignOpen(!isDesignOpen)}
                 >
                   {selectedDesign || '디자인 선택'}
                   <span className="float-right">▼</span>
                 </div>
-                {isDesignOpen && (
+                {isClient && isDesignOpen && (
                   <ul
                     id="design-listbox"
                     className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
@@ -390,27 +318,21 @@ export default function ProductDetailPage() {
                   className="w-full p-2 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                   tabIndex={0}
                   role="combobox"
-                  aria-expanded={isColorOpen}
+                  aria-expanded={isClient ? isColorOpen : false}
                   aria-haspopup="listbox"
                   aria-controls="color-listbox"
-                  aria-activedescendant={isColorOpen && focusedColorIndex >= 0 ? `color-option-${focusedColorIndex}` : undefined}
+                  {...(isClient && isColorOpen && focusedColorIndex >= 0 && {
+                    'aria-activedescendant': `color-option-${focusedColorIndex}`
+                  })}
                   aria-required="true"
                   aria-label={`색상 선택. ${selectedColor ? `현재 선택: ${selectedColor}` : '선택되지 않음'}`}
                   onKeyDown={handleColorKeyDown}
-                  onKeyPress={handleColorKeyPress}
-                  onKeyUp={(e) => {
-                    // keyup에서는 preventDefault만 하고 실제 처리는 keydown에서
-                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar' || e.keyCode === 32 || e.keyCode === 13) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }
-                  }}
                   onClick={() => setIsColorOpen(!isColorOpen)}
                 >
                   {selectedColor || '색상 선택'}
                   <span className="float-right">▼</span>
                 </div>
-                {isColorOpen && (
+                {isClient && isColorOpen && (
                   <ul
                     id="color-listbox"
                     className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
@@ -442,14 +364,16 @@ export default function ProductDetailPage() {
             </fieldset>
 
             {/* 스크린리더용 라이브 영역 */}
-            <div aria-live="polite" aria-atomic="true" className="sr-only">
-              {isDesignOpen && focusedDesignIndex >= 0 && (
-                `디자인 옵션: ${designOptions[focusedDesignIndex]}`
-              )}
-              {isColorOpen && focusedColorIndex >= 0 && (
-                `색상 옵션: ${colorOptions[focusedColorIndex]}`
-              )}
-            </div>
+            {isClient && (
+              <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {isDesignOpen && focusedDesignIndex >= 0 &&
+                  `디자인 옵션: ${designOptions[focusedDesignIndex]}`
+                }
+                {isColorOpen && focusedColorIndex >= 0 &&
+                  `색상 옵션: ${colorOptions[focusedColorIndex]}`
+                }
+              </div>
+            )}
 
             {/* 구매하기 버튼 */}
             <button
