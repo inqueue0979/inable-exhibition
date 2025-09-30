@@ -98,9 +98,7 @@ export default function ProductDetailPage() {
         setFocusedDesignIndex(0);
       } else if (focusedDesignIndex >= 0) {
         // 옵션 선택
-        setSelectedDesign(designOptions[focusedDesignIndex]);
-        setIsDesignOpen(false);
-        setFocusedDesignIndex(-1);
+        selectDesignOption(designOptions[focusedDesignIndex]);
       }
     }
     // 탭으로 옵션 순환
@@ -141,9 +139,7 @@ export default function ProductDetailPage() {
         setFocusedColorIndex(0);
       } else if (focusedColorIndex >= 0) {
         // 옵션 선택
-        setSelectedColor(colorOptions[focusedColorIndex]);
-        setIsColorOpen(false);
-        setFocusedColorIndex(-1);
+        selectColorOption(colorOptions[focusedColorIndex]);
       }
     }
     // 탭으로 옵션 순환
@@ -198,6 +194,21 @@ export default function ProductDetailPage() {
     if (selectedDesign && selectedColor) {
       setIsPurchased(true);
     }
+  };
+
+  // 옵션 선택 핸들러들
+  const selectDesignOption = (option) => {
+    console.log('Selecting design:', option);
+    setSelectedDesign(option);
+    setIsDesignOpen(false);
+    setFocusedDesignIndex(-1);
+  };
+
+  const selectColorOption = (option) => {
+    console.log('Selecting color:', option);
+    setSelectedColor(option);
+    setIsColorOpen(false);
+    setFocusedColorIndex(-1);
   };
 
 
@@ -280,34 +291,30 @@ export default function ProductDetailPage() {
                   {selectedDesign || '디자인 선택'}
                   <span className="float-right">▼</span>
                 </div>
-                {isClient && isDesignOpen && (
-                  <ul
-                    id="design-listbox"
-                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
-                    role="listbox"
-                    aria-label="디자인 옵션"
-                  >
-                    {designOptions.map((option, index) => (
-                      <li
-                        key={option}
-                        id={`design-option-${index}`}
-                        className={`p-2 cursor-pointer hover:bg-blue-100 ${
-                          index === focusedDesignIndex ? 'bg-blue-200' : ''
-                        } ${selectedDesign === option ? 'bg-blue-50 font-medium' : ''}`}
-                        role="option"
-                        aria-selected={selectedDesign === option}
-                        aria-label={`${option}${selectedDesign === option ? ', 선택됨' : ''}`}
-                        onClick={() => {
-                          setSelectedDesign(option);
-                          setIsDesignOpen(false);
-                          setFocusedDesignIndex(-1);
-                        }}
-                      >
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul
+                  id="design-listbox"
+                  className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg ${
+                    isClient && isDesignOpen ? 'block' : 'hidden'
+                  }`}
+                  role="listbox"
+                  aria-label="디자인 옵션"
+                >
+                  {designOptions.map((option, index) => (
+                    <li
+                      key={option}
+                      id={`design-option-${index}`}
+                      className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                        index === focusedDesignIndex ? 'bg-blue-200' : ''
+                      } ${selectedDesign === option ? 'bg-blue-50 font-medium' : ''}`}
+                      role="option"
+                      aria-selected={selectedDesign === option}
+                      aria-label={`${option}${selectedDesign === option ? ', 선택됨' : ''}`}
+                      onClick={() => selectDesignOption(option)}
+                    >
+                      {option}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* 색상 선택 */}
@@ -332,34 +339,30 @@ export default function ProductDetailPage() {
                   {selectedColor || '색상 선택'}
                   <span className="float-right">▼</span>
                 </div>
-                {isClient && isColorOpen && (
-                  <ul
-                    id="color-listbox"
-                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
-                    role="listbox"
-                    aria-label="색상 옵션"
-                  >
-                    {colorOptions.map((option, index) => (
-                      <li
-                        key={option}
-                        id={`color-option-${index}`}
-                        className={`p-2 cursor-pointer hover:bg-blue-100 ${
-                          index === focusedColorIndex ? 'bg-blue-200' : ''
-                        } ${selectedColor === option ? 'bg-blue-50 font-medium' : ''}`}
-                        role="option"
-                        aria-selected={selectedColor === option}
-                        aria-label={`${option}${selectedColor === option ? ', 선택됨' : ''}`}
-                        onClick={() => {
-                          setSelectedColor(option);
-                          setIsColorOpen(false);
-                          setFocusedColorIndex(-1);
-                        }}
-                      >
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul
+                  id="color-listbox"
+                  className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg ${
+                    isClient && isColorOpen ? 'block' : 'hidden'
+                  }`}
+                  role="listbox"
+                  aria-label="색상 옵션"
+                >
+                  {colorOptions.map((option, index) => (
+                    <li
+                      key={option}
+                      id={`color-option-${index}`}
+                      className={`p-2 cursor-pointer hover:bg-blue-100 ${
+                        index === focusedColorIndex ? 'bg-blue-200' : ''
+                      } ${selectedColor === option ? 'bg-blue-50 font-medium' : ''}`}
+                      role="option"
+                      aria-selected={selectedColor === option}
+                      aria-label={`${option}${selectedColor === option ? ', 선택됨' : ''}`}
+                      onClick={() => selectColorOption(option)}
+                    >
+                      {option}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </fieldset>
 
